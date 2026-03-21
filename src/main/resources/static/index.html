@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Forecast Monitoring</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #e3f2fd);
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            text-align: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 8px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2196f3;
+        }
+
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #1976d2;
+        }
+
+        .note {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        canvas {
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>⚡ Wind Forecast Monitoring</h2>
+
+<div class="container">
+
+    <div class="controls">
+
+        Start: <input type="datetime-local" id="start">
+        End: <input type="datetime-local" id="end">
+
+        <br>
+
+        <!-- 🔥 NOTE ADDED -->
+        <div class="note">
+            ⚠️ Enter date between <b>1 Jan 2025</b> to <b>15 Jan 2025</b>
+        </div>
+
+        <br>
+
+        Horizon:
+        <input type="range" id="horizon" min="0" max="48" value="2" oninput="updateHorizon()">
+        <span id="hVal">2</span> hrs
+
+        <br>
+
+        <button onclick="loadData()">Load Data</button>
+
+    </div>
+
+    <canvas id="chart"></canvas>
+
+</div>
+
+<script>
+
+let chart;
+
+function updateHorizon() {
+    document.getElementById("hVal").innerText = document.getElementById("horizon").value;
+}
+
+function loadData() {
+
+    const start = document.getElementById("start").value;
+    const end = document.getElementById("end").value;
+    const horizon = document.getElementById("horizon").value;
+
+    const url = `http://localhost:8080/api/compare?start=${start}&end=${end}&horizon=${horizon}`;
+
+    fetch(url)
+        .then(res => {
+            if (!res.ok) {
+                throw new Error("Server error: " + res.status);
+            }
+            return res.json();
+        })
+        .then(data => {
+
+            console.log("API DATA:", data);
+
+            if (!Array.isArray(data)) return;
+
+            if (data.length === 0) {
+                alert("No data found 😅 Try different range");
+                return;
+            }
+
+            const labels = data.map(d => d.time);
+            const actual = data.map(d => d.actual);
+            const forecast = data.map(d => d.forecast);
+
+            if (chart) chart.destroy();
+
+            chart = new Chart(document.getElementById("chart"), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: "Actual",
+                            data: actual,
+                            borderColor: "#1e88e5",
+                            tension: 0.3
+                        },
+                        {
+                            label: "Forecast",
+                            data: forecast,
+                            borderColor: "#43a047",
+                            tension: 0.3
+                        }
+                    ]
+                }
+            });
+
+        })
+        .catch(err => {
+            console.error("Fetch Error:", err);
+            alert("Backend error 💀 console check kar");
+        });
+}
+
+window.onload = () => {
+    loadData();
+};
+
+</script>
+
+</body>
+</html>
