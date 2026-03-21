@@ -119,7 +119,7 @@ function loadData() {
     const end = document.getElementById("end").value;
     const horizon = document.getElementById("horizon").value;
 
-    const url = `http://localhost:8080/api/compare?start=${start}&end=${end}&horizon=${horizon}`;
+   const url = `/api/compare?start=${start}&end=${end}&horizon=${horizon}`;
 
     fetch(url)
         .then(res => {
