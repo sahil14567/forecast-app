@@ -114,6 +114,10 @@ function updateHorizon() {
 }
 
 function loadData() {
+    if (!start || !end) {
+    alert("Please select start and end date");
+    return;
+}
 
     const start = document.getElementById("start").value;
     const end = document.getElementById("end").value;
@@ -169,7 +173,7 @@ function loadData() {
         })
         .catch(err => {
             console.error("Fetch Error:", err);
-            alert("Backend error 💀 console check kar");
+            alert("Backend error 💀 console check karo");
         });
 }
 

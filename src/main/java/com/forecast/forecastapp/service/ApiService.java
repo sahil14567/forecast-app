@@ -54,10 +54,12 @@ public class ApiService {
 
     // 🔥 MAIN LOGIC
     public List<ComparisonResult> compareData(String start, String end, int horizon) {
+        if (start == null || end == null || start.isEmpty() || end.isEmpty()) {
+        return new ArrayList<>();
+        }
 
-        LocalDateTime startTime = LocalDateTime.parse(start);
-        LocalDateTime endTime = LocalDateTime.parse(end);
-
+        LocalDateTime startTime = LocalDateTime.parse(start + ":00");
+        LocalDateTime endTime = LocalDateTime.parse(end + ":00");
         List<DataPoint> actualList = getActualData();
         List<DataPoint> forecastList = getForecastData();
 
