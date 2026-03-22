@@ -22,11 +22,15 @@ AI tools were used for:
 - Debugging code
 - UI improvements
 - API integration guidance
+- (overall used for saving timing)
+
+
+#link
+https://forecast-app-v1r4.onrender.com
+
 
 ## How to Run
 
 ```bash
 ./mvnw spring-boot:run
 
-AI Usage
-AI tools were used for debugging, UI improvements, and API integration support.(overall the use was to save time )
